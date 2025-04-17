@@ -18,8 +18,7 @@ if (!global.cartItems) {
   global.cartItems = [];
 }
 
-// Logo URL for Flowers N Creams (Updated with the new logo)
-global.temporaryLogoUrl = 'https://i.imgur.com/2zzUFu1.png';
+// No need for the logo URL anymore, we'll use a local asset instead
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

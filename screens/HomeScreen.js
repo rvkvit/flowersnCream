@@ -3,6 +3,9 @@ import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, SafeAreaVi
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 
+// Import the local logo image
+const logoImage = require('../assets/images/flowers_n_creams_logo.jpg');
+
 const HomeScreen = () => {
   const navigation = useNavigation();
   
@@ -44,7 +47,7 @@ const HomeScreen = () => {
         {/* Header with Logo */}
         <View style={styles.header}>
           <Image 
-            source={{ uri: global.temporaryLogoUrl }} 
+            source={logoImage} 
             style={styles.logo}
             resizeMode="contain"
           />

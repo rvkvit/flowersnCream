@@ -3,6 +3,9 @@ import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, SafeAreaVi
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 
+// Import the local logo image
+const logoImage = require('../assets/images/flowers_n_creams_logo.jpg');
+
 const AboutScreen = () => {
   const navigation = useNavigation();
   
@@ -23,7 +26,7 @@ const AboutScreen = () => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.logoContainer}>
           <Image 
-            source={{ uri: global.temporaryLogoUrl }}
+            source={logoImage}
             style={styles.logo}
             resizeMode="contain"
           />
