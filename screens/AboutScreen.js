@@ -23,7 +23,7 @@ const AboutScreen = () => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.logoContainer}>
           <Image 
-            source={require('../assets/images/flowers_n_creams_logo.png')} 
+            source={{ uri: global.temporaryLogoUrl }}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -70,16 +70,16 @@ const AboutScreen = () => {
           <Text style={styles.sectionTitle}>Visit Us</Text>
           <View style={styles.contactItem}>
             <Text style={styles.contactTitle}>Address:</Text>
-            <Text style={styles.contactInfo}>123 Bakery Lane, Sweetville, CA 90210</Text>
+            <Text style={styles.contactInfo}>Leppävaarankatu 3-5, 02600 Espoo, Finland</Text>
           </View>
           <View style={styles.contactItem}>
             <Text style={styles.contactTitle}>Hours:</Text>
-            <Text style={styles.contactInfo}>Monday - Friday: 7:00 AM - 7:00 PM</Text>
-            <Text style={styles.contactInfo}>Saturday - Sunday: 8:00 AM - 5:00 PM</Text>
+            <Text style={styles.contactInfo}>Monday - Friday: 9:00 - 20:00</Text>
+            <Text style={styles.contactInfo}>Saturday - Sunday: 10:00 - 18:00</Text>
           </View>
           <View style={styles.contactItem}>
             <Text style={styles.contactTitle}>Phone:</Text>
-            <Text style={styles.contactInfo}>(555) 123-4567</Text>
+            <Text style={styles.contactInfo}>+358 40 123 4567</Text>
           </View>
         </View>
         

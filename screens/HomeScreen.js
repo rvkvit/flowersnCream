@@ -7,17 +7,17 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   
   const popularItems = [
-    { id: 1, name: 'Chocolate Cake', price: '$25.99', image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500', 
+    { id: 1, name: 'Chocolate Cake', price: '€149.99', image: { uri: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500' }, 
       description: 'Rich, moist chocolate cake with a velvety smooth ganache frosting. Perfect for chocolate lovers.' },
-    { id: 2, name: 'Strawberry Cupcake', price: '$4.50', image: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?w=500',
-      description: 'Light vanilla cupcake topped with fresh strawberry buttercream and a strawberry slice.' },
-    { id: 3, name: 'Vanilla Cream Pie', price: '$19.99', image: 'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=500',
+    { id: 2, name: 'Strawberry Cupcake Set', price: '€129.50', image: { uri: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?w=500' },
+      description: 'Light vanilla cupcakes topped with fresh strawberry buttercream and strawberry slices.' },
+    { id: 3, name: 'Vanilla Cream Pie', price: '€119.99', image: { uri: 'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=500' },
       description: 'Smooth vanilla custard in a buttery crust, topped with whipped cream and vanilla bean specks.' },
-    { id: 4, name: 'Cinnamon Roll', price: '$3.99', image: 'https://images.unsplash.com/photo-1583529245872-c37154a68bcf?w=500',
+    { id: 4, name: 'Cinnamon Roll Collection', price: '€159.99', image: { uri: 'https://images.unsplash.com/photo-1583529245872-c37154a68bcf?w=500' },
       description: 'Soft, fluffy rolls with a cinnamon-sugar filling and cream cheese frosting.' },
-    { id: 5, name: 'Red Velvet Cake', price: '$28.99', image: 'https://images.unsplash.com/photo-1586788224331-947f68671cf1?w=500',
+    { id: 5, name: 'Red Velvet Cake', price: '€189.99', image: { uri: 'https://images.unsplash.com/photo-1586788224331-947f68671cf1?w=500' },
       description: 'Classic red velvet cake with cream cheese frosting, a perfect blend of cocoa and vanilla.' },
-    { id: 6, name: 'Macarons', price: '$2.50', image: 'https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=500',
+    { id: 6, name: 'Premium Macarons Box', price: '€199.50', image: { uri: 'https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=500' },
       description: 'Delicate almond meringue cookies with a variety of filling flavors.' },
   ];
 
@@ -44,11 +44,11 @@ const HomeScreen = () => {
         {/* Header with Logo */}
         <View style={styles.header}>
           <Image 
-            source={require('../assets/images/flowers_n_creams_logo.png')} 
+            source={{ uri: global.temporaryLogoUrl }} 
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.subtitle}>Bakery & Cafe</Text>
+          <Text style={styles.subtitle}>Sweeten your life with a touch of flowers and creams</Text>
         </View>
 
         {/* Banner */}
@@ -96,7 +96,7 @@ const HomeScreen = () => {
                 style={styles.itemCard}
                 onPress={() => handleItemPress(item)}
               >
-                <Image source={{ uri: item.image }} style={styles.itemImage} />
+                <Image source={item.image} style={styles.itemImage} />
                 <View style={styles.itemInfo}>
                   <Text style={styles.itemName}>{item.name}</Text>
                   <Text style={styles.itemPrice}>{item.price}</Text>
@@ -148,16 +148,20 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 20,
+    backgroundColor: '#FFF8F0',
   },
   logo: {
-    width: 180,
-    height: 80,
-    marginBottom: 5,
+    width: 220,
+    height: 220,
+    marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
     color: '#666',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    maxWidth: '80%',
   },
   bannerContainer: {
     position: 'relative',

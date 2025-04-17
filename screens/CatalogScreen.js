@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, SafeAreaView, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, SafeAreaView, TextInput, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 const CatalogScreen = () => {
   const navigation = useNavigation();
@@ -13,29 +14,29 @@ const CatalogScreen = () => {
   const [activeCategory, setActiveCategory] = useState(selectedCategory?.id || null);
   
   const bakeryItems = [
-    { id: 1, name: 'Chocolate Cake', price: '$25.99', category: 1, image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500', 
+    { id: 1, name: 'Chocolate Cake', price: '€149.99', category: 1, image: { uri: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500' }, 
       description: 'Rich, moist chocolate cake with a velvety smooth ganache frosting. Perfect for chocolate lovers.' },
-    { id: 2, name: 'Strawberry Cupcake', price: '$4.50', category: 1, image: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?w=500',
-      description: 'Light vanilla cupcake topped with fresh strawberry buttercream and a strawberry slice.' },
-    { id: 3, name: 'Vanilla Cream Pie', price: '$19.99', category: 1, image: 'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=500',
+    { id: 2, name: 'Strawberry Cupcake Set', price: '€129.50', category: 1, image: { uri: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?w=500' },
+      description: 'Light vanilla cupcakes topped with fresh strawberry buttercream and strawberry slices.' },
+    { id: 3, name: 'Vanilla Cream Pie', price: '€119.99', category: 1, image: { uri: 'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=500' },
       description: 'Smooth vanilla custard in a buttery crust, topped with whipped cream and vanilla bean specks.' },
-    { id: 4, name: 'Cinnamon Roll', price: '$3.99', category: 3, image: 'https://images.unsplash.com/photo-1583529245872-c37154a68bcf?w=500',
+    { id: 4, name: 'Cinnamon Roll Collection', price: '€159.99', category: 3, image: { uri: 'https://images.unsplash.com/photo-1583529245872-c37154a68bcf?w=500' },
       description: 'Soft, fluffy rolls with a cinnamon-sugar filling and cream cheese frosting.' },
-    { id: 5, name: 'Red Velvet Cake', price: '$28.99', category: 1, image: 'https://images.unsplash.com/photo-1586788224331-947f68671cf1?w=500',
+    { id: 5, name: 'Red Velvet Cake', price: '€189.99', category: 1, image: { uri: 'https://images.unsplash.com/photo-1586788224331-947f68671cf1?w=500' },
       description: 'Classic red velvet cake with cream cheese frosting, a perfect blend of cocoa and vanilla.' },
-    { id: 6, name: 'Macarons', price: '$2.50', category: 2, image: 'https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=500',
+    { id: 6, name: 'Premium Macarons Box', price: '€199.50', category: 2, image: { uri: 'https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=500' },
       description: 'Delicate almond meringue cookies with a variety of filling flavors.' },
-    { id: 7, name: 'Sourdough Bread', price: '$5.99', category: 4, image: 'https://images.unsplash.com/photo-1585478259715-4857180e83fc?w=500',
+    { id: 7, name: 'Sourdough Bread', price: '€105.99', category: 4, image: { uri: 'https://images.unsplash.com/photo-1585478259715-4857180e83fc?w=500' },
       description: 'Artisan sourdough bread with a crispy crust and chewy interior.' },
-    { id: 8, name: 'Chocolate Chip Cookies', price: '$1.99', category: 2, image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500',
+    { id: 8, name: 'Chocolate Chip Cookies', price: '€101.99', category: 2, image: { uri: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=500' },
       description: 'Classic chocolate chip cookies with crispy edges and soft centers.' },
-    { id: 9, name: 'Croissant', price: '$3.50', category: 3, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500',
+    { id: 9, name: 'Croissant', price: '€103.50', category: 3, image: { uri: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500' },
       description: 'Buttery, flaky croissants baked to golden perfection.' },
-    { id: 10, name: 'Glazed Donuts', price: '$1.50', category: 5, image: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500',
+    { id: 10, name: 'Glazed Donuts', price: '€101.50', category: 5, image: { uri: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500' },
       description: 'Light and airy donuts with a sweet glaze.' },
-    { id: 11, name: 'Baguette', price: '$3.99', category: 4, image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc7b?w=500',
+    { id: 11, name: 'Baguette', price: '€103.99', category: 4, image: { uri: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc7b?w=500' },
       description: 'Traditional French baguette with a crunchy crust and soft interior.' },
-    { id: 12, name: 'Chocolate Donuts', price: '$2.25', category: 5, image: 'https://images.unsplash.com/photo-1527904324834-3bda86da6771?w=500',
+    { id: 12, name: 'Chocolate Donuts', price: '€102.25', category: 5, image: { uri: 'https://images.unsplash.com/photo-1527904324834-3bda86da6771?w=500' },
       description: 'Chocolate cake donuts topped with chocolate glaze and sprinkles.' },
   ];
   
@@ -76,21 +77,56 @@ const CatalogScreen = () => {
     navigation.navigate('OrderDetails', { item });
   };
   
+  const addToCart = (item) => {
+    const cartItem = {
+      ...item,
+      quantity: 1
+    };
+    
+    const existingCartItems = global.cartItems || [];
+    const existingItemIndex = existingCartItems.findIndex(i => i.id === item.id);
+    
+    if (existingItemIndex >= 0) {
+      existingCartItems[existingItemIndex].quantity += 1;
+      Alert.alert(
+        "Updated Cart",
+        `Added another ${item.name} to your cart.`
+      );
+    } else {
+      existingCartItems.push(cartItem);
+      Alert.alert(
+        "Added to Cart",
+        `${item.name} added to your cart.`
+      );
+    }
+    
+    global.cartItems = existingCartItems;
+  };
+  
   const renderItem = ({ item }) => (
     <TouchableOpacity 
       style={styles.itemCard}
       onPress={() => handleItemPress(item)}
     >
-      <Image source={{ uri: item.image }} style={styles.itemImage} />
+      <Image source={item.image} style={styles.itemImage} />
       <View style={styles.itemInfo}>
         <Text style={styles.itemName}>{item.name}</Text>
         <Text style={styles.itemPrice}>{item.price}</Text>
-        <TouchableOpacity 
-          style={styles.viewButton}
-          onPress={() => handleItemPress(item)}
-        >
-          <Text style={styles.viewButtonText}>View Details</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity 
+            style={styles.viewButton}
+            onPress={() => handleItemPress(item)}
+          >
+            <Text style={styles.viewButtonText}>View</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.addCartButton}
+            onPress={() => addToCart(item)}
+          >
+            <Ionicons name="cart" size={14} color="white" />
+            <Text style={styles.addCartButtonText}>Add</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -259,16 +295,38 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   viewButton: {
     backgroundColor: '#D06B61',
     padding: 8,
     borderRadius: 20,
     alignItems: 'center',
+    flex: 1,
+    marginRight: 5,
   },
   viewButtonText: {
     color: 'white',
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  addCartButton: {
+    backgroundColor: '#333',
+    padding: 8,
+    borderRadius: 20,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flex: 1,
+    marginLeft: 5,
+  },
+  addCartButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginLeft: 4,
   },
   emptyContainer: {
     padding: 20,

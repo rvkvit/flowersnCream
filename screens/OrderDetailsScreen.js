@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, SafeAreaView, Alert, Linking, Modal } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 const OrderDetailsScreen = () => {
   const navigation = useNavigation();
@@ -9,10 +10,11 @@ const OrderDetailsScreen = () => {
   const { item } = route.params;
   
   const [quantity, setQuantity] = useState(1);
+  const [showOrderOptions, setShowOrderOptions] = useState(false);
   
   // Calculate the total price based on quantity
   const calculateTotal = () => {
-    const priceWithoutSymbol = item.price.replace('$', '');
+    const priceWithoutSymbol = item.price.replace('€', '');
     const price = parseFloat(priceWithoutSymbol);
     return (price * quantity).toFixed(2);
   };
@@ -28,28 +30,91 @@ const OrderDetailsScreen = () => {
   };
   
   const handleAddToCart = () => {
+    const cartItem = {
+      ...item,
+      quantity: quantity
+    };
+    
+    const existingCartItems = global.cartItems || [];
+    const existingItemIndex = existingCartItems.findIndex(i => i.id === item.id);
+    
+    if (existingItemIndex >= 0) {
+      existingCartItems[existingItemIndex].quantity += quantity;
+    } else {
+      existingCartItems.push(cartItem);
+    }
+    
+    global.cartItems = existingCartItems;
+    
     Alert.alert(
       "Added to Cart",
       `${quantity} ${item.name}(s) added to your cart.`,
-      [{ text: "OK" }]
+      [
+        { 
+          text: "Continue Shopping",
+          onPress: () => navigation.goBack()
+        },
+        { 
+          text: "View Cart",
+          onPress: () => navigation.navigate('Cart'),
+          style: 'default'
+        }
+      ]
     );
   };
   
   const handlePlaceOrder = () => {
-    Alert.alert(
-      "Order Placed",
-      `Thank you for your order of ${quantity} ${item.name}(s)! Your order is being processed.`,
-      [
-        { 
-          text: "Continue Shopping", 
-          onPress: () => navigation.navigate('Catalog')
-        },
-        { 
-          text: "Go Home", 
-          onPress: () => navigation.navigate('Home')
-        }
-      ]
-    );
+    setShowOrderOptions(true);
+  };
+  
+  const orderViaOpBank = () => {
+    const cartItem = {
+      ...item,
+      quantity: quantity
+    };
+    
+    global.cartItems = [cartItem];
+    setShowOrderOptions(false);
+    navigation.navigate('Cart');
+  };
+  
+  const orderViaWhatsApp = () => {
+    const total = calculateTotal();
+    const message = `Hello Flowers N Creams! I would like to order:\n\n${quantity} x ${item.name} (€${total})\n\nPlease let me know how to proceed with payment and delivery. Thank you!`;
+    
+    // WhatsApp Finnish number format +358 40 123 4567
+    Linking.openURL(`whatsapp://send?phone=+358401234567&text=${encodeURIComponent(message)}`)
+      .catch(err => {
+        Alert.alert(
+          'WhatsApp Not Installed',
+          'Please install WhatsApp to use this feature, or choose another ordering method.',
+          [{ text: 'OK' }]
+        );
+      });
+      
+    setShowOrderOptions(false);
+  };
+  
+  const orderViaInstagram = () => {
+    // Open Instagram profile and then show instructions
+    Linking.openURL('https://www.instagram.com/flowers_n_creams/')
+      .catch(err => {
+        Alert.alert(
+          'Instagram Not Installed',
+          'Please install Instagram to use this feature, or choose another ordering method.',
+          [{ text: 'OK' }]
+        );
+      });
+      
+    setTimeout(() => {
+      Alert.alert(
+        'Ordering via Instagram',
+        'Please send a direct message to @flowers_n_creams with your order details.',
+        [{ text: 'OK' }]
+      );
+    }, 1000);
+    
+    setShowOrderOptions(false);
   };
   
   return (
@@ -59,7 +124,7 @@ const OrderDetailsScreen = () => {
       {/* Header Image */}
       <View style={styles.imageContainer}>
         <Image 
-          source={{ uri: item.image }} 
+          source={typeof item.image === 'string' ? { uri: item.image } : item.image} 
           style={styles.image}
           resizeMode="cover"
         />
@@ -106,7 +171,7 @@ const OrderDetailsScreen = () => {
           
           <View style={styles.totalContainer}>
             <Text style={styles.totalLabel}>Total:</Text>
-            <Text style={styles.totalValue}>${calculateTotal()}</Text>
+            <Text style={styles.totalValue}>€{calculateTotal()}</Text>
           </View>
         </View>
         
@@ -130,17 +195,83 @@ const OrderDetailsScreen = () => {
             style={[styles.button, styles.cartButton]}
             onPress={handleAddToCart}
           >
-            <Text style={styles.buttonText}>Add to Cart</Text>
+            <Ionicons name="cart" size={20} color="white" style={styles.buttonIcon} />
+            <Text style={[styles.buttonText, styles.cartButtonText]}>Add to Cart</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
             style={[styles.button, styles.orderButton]}
             onPress={handlePlaceOrder}
           >
-            <Text style={styles.buttonText}>Place Order</Text>
+            <Ionicons name="bag-check" size={20} color="#D06B61" style={styles.buttonIcon} />
+            <Text style={[styles.buttonText, styles.orderButtonText]}>Buy Now</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+      
+      {/* Order Options Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showOrderOptions}
+        onRequestClose={() => setShowOrderOptions(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Choose Ordering Method</Text>
+              <TouchableOpacity 
+                style={styles.modalCloseButton}
+                onPress={() => setShowOrderOptions(false)}
+              >
+                <Text style={styles.modalCloseButtonText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.orderOption}
+              onPress={orderViaOpBank}
+            >
+              <View style={styles.orderOptionIcon}>
+                <Ionicons name="card-outline" size={24} color="#D06B61" />
+              </View>
+              <View style={styles.orderOptionTextContainer}>
+                <Text style={styles.orderOptionTitle}>OP Bank Payment</Text>
+                <Text style={styles.orderOptionDescription}>Pay securely online with OP Bank</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#999" />
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.orderOption}
+              onPress={orderViaWhatsApp}
+            >
+              <View style={[styles.orderOptionIcon, { backgroundColor: '#25D366' }]}>
+                <Ionicons name="logo-whatsapp" size={24} color="white" />
+              </View>
+              <View style={styles.orderOptionTextContainer}>
+                <Text style={styles.orderOptionTitle}>Order via WhatsApp</Text>
+                <Text style={styles.orderOptionDescription}>Send your order details directly to our team</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#999" />
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.orderOption}
+              onPress={orderViaInstagram}
+            >
+              <View style={[styles.orderOptionIcon, { backgroundColor: '#C13584' }]}>
+                <Ionicons name="logo-instagram" size={24} color="white" />
+              </View>
+              <View style={styles.orderOptionTextContainer}>
+                <Text style={styles.orderOptionTitle}>Order via Instagram</Text>
+                <Text style={styles.orderOptionDescription}>Message us on Instagram to place your order</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#999" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -274,7 +405,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
     marginBottom: 30,
   },
   button: {
@@ -282,25 +412,97 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'center',
   },
-  cartButton: {
-    backgroundColor: 'white',
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: '#D06B61',
-  },
-  orderButton: {
-    backgroundColor: '#D06B61',
-    marginLeft: 10,
+  buttonIcon: {
+    marginRight: 8,
   },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#D06B61',
+  },
+  cartButton: {
+    backgroundColor: '#D06B61',
+    marginRight: 5,
+  },
+  cartButtonText: {
+    color: 'white',
+  },
+  orderButton: {
+    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: '#D06B61',
+    marginLeft: 5,
   },
   orderButtonText: {
-    color: 'white',
+    color: '#D06B61',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    maxHeight: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  modalCloseButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F0E4D7',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalCloseButtonText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: 'bold',
+  },
+  orderOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    backgroundColor: '#F8F8F8',
+  },
+  orderOptionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#F0E4D7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  orderOptionTextContainer: {
+    flex: 1,
+  },
+  orderOptionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  orderOptionDescription: {
+    fontSize: 14,
+    color: '#666',
   },
 });
 
